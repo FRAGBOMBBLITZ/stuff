@@ -645,7 +645,7 @@ end))
 ------------------------------------ end ------------------------------------
 
 --welcome notif
-StarterGui:SetCore("SendNotification", {Title = "PacketPocket", Text = "Tool GUI made by ches, havfun", Duration = 5})
+StarterGui:SetCore("SendNotification", {Title = "PacketPocket", Text = "GUI by ches, havfun! :)", Duration = 8})
 
 local function CreateEntry(PacketType: string, PacketData: string, HexID: string, Priority: number, Reliability: number, ButtonColor: "Red,Signal" | "Blue,Physics" | Color3, TextColor : "Red,Signal" | "Blue,Physics", RelevantTime, Length)
 	local EntryButton = PacketButton:Clone()
