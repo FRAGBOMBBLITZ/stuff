@@ -712,8 +712,6 @@ PP.PostPacket = function(PacketType: string | "Signal" | "Physics", PacketData: 
 	CreateEntry(PacketType, PacketData, HexID, Priority, Reliability, ButtonColor, TextColor, RelevantTime, Length)	
 end
 
-PP.PostPacket()
-
 return PP
 
 -- Format:
