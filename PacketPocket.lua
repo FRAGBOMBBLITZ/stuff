@@ -77,6 +77,8 @@ local TextBox_2 = Instance.new("TextBox")
 local UIPadding_7 = Instance.new("UIPadding")
 local UIListLayout_3 = Instance.new("UIListLayout")
 local ScrollColor_2 = Instance.new("Frame")
+local GubbyResizerFrame = Instance.new("Frame")
+local GubbyResizer = Instance.new("ImageButton")
 local Assets = Instance.new("Folder")
 local Packet = Instance.new("TextButton")
 local UIPadding_8 = Instance.new("UIPadding")
@@ -212,7 +214,7 @@ TextBox.BorderSizePixel = 0
 TextBox.Size = UDim2.new(1, 0, 1, 0)
 TextBox.Font = Enum.Font.SourceSans
 TextBox.PlaceholderColor3 = Color3.new(0.698039, 0.698039, 0.698039)
-TextBox.PlaceholderText = "Search. Name or HexID"
+TextBox.PlaceholderText = "Search"
 TextBox.Text = ""
 TextBox.TextColor3 = Color3.new(1, 1, 1)
 TextBox.TextSize = 16
@@ -376,6 +378,27 @@ ScrollColor_2.BorderSizePixel = 0
 ScrollColor_2.Position = UDim2.new(1, 0, 0, 0)
 ScrollColor_2.Size = UDim2.new(0, 12, 1, 0)
 
+GubbyResizerFrame.Name = "GubbyResizerFrame"
+GubbyResizerFrame.Parent = Main
+GubbyResizerFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+GubbyResizerFrame.BackgroundColor3 = Color3.new(1, 1, 1)
+GubbyResizerFrame.BackgroundTransparency = 1
+GubbyResizerFrame.BorderColor3 = Color3.new(0, 0, 0)
+GubbyResizerFrame.BorderSizePixel = 0
+GubbyResizerFrame.Position = UDim2.new(1, 0, 1, 0)
+GubbyResizerFrame.Size = UDim2.new(0, 25, 0, 25)
+
+GubbyResizer.Name = "GubbyResizer"
+GubbyResizer.Parent = GubbyResizerFrame
+GubbyResizer.AnchorPoint = Vector2.new(.5,.5)
+GubbyResizer.Position = UDim2.new(0.5,0,.5,0)
+GubbyResizer.BackgroundColor3 = Color3.new(1, 1, 1)
+GubbyResizer.BackgroundTransparency = 1
+GubbyResizer.BorderColor3 = Color3.new(0, 0, 0)
+GubbyResizer.BorderSizePixel = 0
+GubbyResizer.Size = UDim2.new(1, 0, 1, 0)
+GubbyResizer.Image = "rbxassetid://115233777642994"
+
 Assets.Name = "Assets"
 Assets.Parent = PacketPocket
 
@@ -428,6 +451,7 @@ local WindowConnections = {}
 
 -- services
 local UserInputService = Services.UserInputService
+local TweenService = Services.TweenService
 local StarterGui = Services.StarterGui
 
 -- player
@@ -470,6 +494,92 @@ end
 InitializeDragger(Main, Dragger)
 
 -- end of nice code, i'm sorry
+
+
+
+
+
+-----------------------------------------------------------------------------------------------------------
+------------------------------------------ SLAP ON GUBBY RESIZER ------------------------------------------
+-----------------------------------------------------------------------------------------------------------
+
+local GUBBYRESIZER = function(MainFrame, DraggerFrame)
+	local MainFramePos
+	local MouseStartPos
+	local IsDragging = false
+
+	local MouseDown = function()
+		MainFramePos = Vector2.new(MainFrame.Size.X.Offset, MainFrame.Size.Y.Offset)
+		MouseStartPos = Vector2.new(Mouse.X, Mouse.Y)
+		IsDragging = true
+		
+		TweenService:Create(GubbyResizer, TweenInfo.new(0.5, Enum.EasingStyle.Elastic,Enum.EasingDirection.Out), {Size = UDim2.new(.7,0,.7,0)}):Play()
+	end
+	
+	local MouseHover = function()
+		if IsDragging then return end
+		TweenService:Create(GubbyResizer, TweenInfo.new(0.5, Enum.EasingStyle.Elastic,Enum.EasingDirection.Out), {Size = UDim2.new(1.5,0,1.5,0)}):Play()
+	end
+	
+	local MouseLeave = function()
+		if IsDragging then return end
+		TweenService:Create(GubbyResizer, TweenInfo.new(0.5, Enum.EasingStyle.Elastic,Enum.EasingDirection.Out), {Size = UDim2.new(1,0,1,0)}):Play()
+	end
+	
+	local MouseUp = function(Input : InputObject, GameProcessed)
+		if not IsDragging then return end 
+		
+		if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+			IsDragging = false
+		elseif Input.UserInputType == Enum.UserInputType.Touch then
+			IsDragging = false
+		end
+		
+		TweenService:Create(GubbyResizer, TweenInfo.new(0.5), {Rotation = 0}):Play()
+		TweenService:Create(GubbyResizer, TweenInfo.new(0.4, Enum.EasingStyle.Elastic,Enum.EasingDirection.Out), {Size = UDim2.new(1.5,0,1.5,0)}):Play()
+	end
+
+
+	local MouseMoved = function()
+		if not IsDragging then return end
+
+		local MousePos = Vector2.new(MouseStartPos.X - Mouse.X, MouseStartPos.Y - Mouse.Y)
+		
+		
+		local newgubbysizeX = math.clamp(MainFramePos.X - MousePos.X, 220,12000)
+		local newgubbysizeY = math.clamp(MainFramePos.Y - MousePos.Y, 126, 12000)
+		
+		local differenceX = -MousePos.X
+		local differenceY = -MousePos.Y
+		local maindif = differenceX + differenceY
+		local sizedif = math.clamp(maindif,-600,600)
+		
+		MainFrame.Size = UDim2.fromOffset(newgubbysizeX, newgubbysizeY)
+		--TweenService:Create(GubbyResizer, TweenInfo.new(0.03), {Rotation = GubbyResizer.Rotation + (maindif / 40)}):Play()
+		--TweenService:Create(GubbyResizer, TweenInfo.new(0.03), {Size = UDim2.new(.7,(sizedif / 10),.7,(sizedif / 10))}):Play()
+	end
+	
+	table.insert(WindowConnections, DraggerFrame.MouseEnter:Connect(MouseHover))
+	table.insert(WindowConnections, DraggerFrame.MouseLeave:Connect(MouseLeave))
+	table.insert(WindowConnections, DraggerFrame.MouseButton1Down:Connect(MouseDown))
+	table.insert(WindowConnections, UserInputService.InputEnded:Connect(MouseUp))
+	table.insert(WindowConnections, Mouse.Move:Connect(MouseMoved))
+end
+GUBBYRESIZER(Main, GubbyResizer)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 table.insert(WindowConnections, MinimizeButton.MouseButton1Click:Connect(function()
 	local WindowIsMinimized = not Body.Visible
@@ -601,6 +711,8 @@ PP.PostPacket = function(PacketType: string | "Signal" | "Physics", PacketData: 
 
 	CreateEntry(PacketType, PacketData, HexID, Priority, Reliability, ButtonColor, TextColor, RelevantTime, Length)	
 end
+
+PP.PostPacket()
 
 return PP
 
