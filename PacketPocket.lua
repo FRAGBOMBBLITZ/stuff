@@ -600,6 +600,7 @@ end)
 local PacketButton = Assets.Packet
 local DescriptionHeader = Description.TextLabel
 LogList.ScrollingFrame.AutomaticCanvasSize = "Y"
+LogList.ScrollingFrame.CanvasSize = UDim2.new(0,0,0,0)
 
 ------------------------------------ searching ------------------------------------
 -- THIS IS THE CLEAR LOGS BUTTON
