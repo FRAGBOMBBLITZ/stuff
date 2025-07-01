@@ -339,7 +339,7 @@ ScrollingFrame_2.BorderColor3 = Color3.new(0, 0, 0)
 ScrollingFrame_2.BorderSizePixel = 0
 ScrollingFrame_2.Size = UDim2.new(1, -2, 1, 0)
 ScrollingFrame_2.ZIndex = 2
-ScrollingFrame_2.CanvasSize = UDim2.new(0, 0, 0, 0)
+ScrollingFrame_2.CanvasSize = UDim2.new(0, 0, 10, 0)
 ScrollingFrame_2.ScrollBarThickness = 8
 
 TextBox_2.Parent = ScrollingFrame_2
