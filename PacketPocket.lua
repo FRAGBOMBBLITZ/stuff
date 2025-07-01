@@ -488,16 +488,20 @@ CloseButton.MouseButton1Click:Once(function()
 end)
 
 ------------------------------------ searching ------------------------------------
+-- THIS IS THE CLEAR LOGS BUTTON
 local SearchList = LogList.ScrollingFrame
 table.insert(WindowConnections, LeftList.TextButton.MouseButton1Click:Connect(function()
 	for _, EntryButton in SearchList:GetChildren() do
 		if EntryButton.Name == "Packet" then
-
 			EntryButton:Destroy()
 		end
 	end
+
+	DescriptionHeader.Visible = false
+	Text.ScrollingFrame.TextBox.Text = ""
 end))
 
+-- SEARCH TEXTBOX
 table.insert(WindowConnections, SearchFrame.TextBox:GetPropertyChangedSignal("Text"):Connect(function()
 	local Search = SearchFrame.TextBox.Text:lower()
 	
