@@ -438,7 +438,7 @@ local InitializeDragger = function(MainFrame, DraggerFrame)
 	local MainFramePos
 	local MouseStartPos
 	local IsDragging = false
-	
+
 	local MouseDown = function()
 		MainFramePos = Vector2.new(MainFrame.Position.X.Offset, MainFrame.Position.Y.Offset)
 		MouseStartPos = Vector2.new(Mouse.X, Mouse.Y)
@@ -473,7 +473,7 @@ InitializeDragger(Main, Dragger)
 
 table.insert(WindowConnections, MinimizeButton.MouseButton1Click:Connect(function()
 	local WindowIsMinimized = not Body.Visible
-	
+
 	Body.Visible = WindowIsMinimized
 	MinimizeButton.ImageLabel.Rotation = WindowIsMinimized and 0 or 180
 end))
@@ -482,10 +482,14 @@ CloseButton.MouseButton1Click:Once(function()
 	for _, Connection in WindowConnections do
 		Connection:Disconnect()
 	end
-	
+
 	WindowConnections = nil
 	PacketPocket:Destroy()
 end)
+
+local PacketButton = Assets.Packet
+local DescriptionHeader = Description.TextLabel
+LogList.ScrollingFrame.AutomaticCanvasSize = "Y"
 
 ------------------------------------ searching ------------------------------------
 -- THIS IS THE CLEAR LOGS BUTTON
@@ -504,13 +508,13 @@ end))
 -- SEARCH TEXTBOX
 table.insert(WindowConnections, SearchFrame.TextBox:GetPropertyChangedSignal("Text"):Connect(function()
 	local Search = SearchFrame.TextBox.Text:lower()
-	
+
 	if Search ~= "" and string.sub(Search,1,1) ~= " " then 
-		
+
 		for _, EntryButton in SearchList:GetChildren() do
 			if EntryButton.Name == "Packet" then
 				local Name, ID = EntryButton:GetAttribute("SearchName"), EntryButton:GetAttribute("SearchID")
-				
+
 				if string.match(Name, "^"..Search) or string.match(ID, "^"..Search) then
 					EntryButton.Visible = true
 				else
@@ -518,7 +522,7 @@ table.insert(WindowConnections, SearchFrame.TextBox:GetPropertyChangedSignal("Te
 				end
 			end
 		end
-		
+
 	else
 		for _, EntryButton in SearchList:GetChildren() do
 			if EntryButton.Name == "Packet" then
@@ -532,42 +536,39 @@ end))
 --welcome notif
 StarterGui:SetCore("SendNotification", {Title = "PacketPocket", Text = "Tool GUI made by ches, havfun", Duration = 5})
 
-local PacketButton = Assets.Packet
-local DescriptionHeader = Description.TextLabel
-LogList.ScrollingFrame.AutomaticCanvasSize = "Y"
 
 local function CreateEntry(PacketType: string, PacketData: string, HexID: string, Priority: number, Reliability: number, ButtonColor: "Red,Signal" | "Blue,Physics" | Color3, TextColor : "Red,Signal" | "Blue,Physics", RelevantTime, Length)
 	local EntryButton = PacketButton:Clone()
 	EntryButton.Parent = ScrollingFrame
 	EntryButton.Visible = true
-		
+
 	-- real button
 	EntryButton.Text = PacketType.." Packet"
 	EntryButton.BackgroundColor3 = ButtonColor
 	EntryButton.TextColor3 = TextColor
 	EntryButton.Time.TextColor3 = TextColor
-	
+
 	-- real button, sub thing
 	EntryButton.Time.Text = "("..RelevantTime..") | "..HexID
-	
+
 	-- making search data (. )Y( .) look, boobs :D
 	EntryButton:SetAttribute("SearchName", PacketType:lower())
 	EntryButton:SetAttribute("SearchID", HexID:lower())
-	
+
 	local EntryButtonClickConnection = EntryButton.MouseButton1Click:Connect(function()
 		if not DescriptionHeader.Visible then DescriptionHeader.Visible = true end
 		DescriptionHeader.Text = string.lower(PacketType).."packet "..HexID.." | priority: "..Priority.." | reliability: "..Reliability.." | length: "..Length
-		
+
 		-- texteditor
 		Text.ScrollingFrame.TextBox.Text = PacketData
-		
+
 		-- header
 		DescriptionHeader.BackgroundColor3 = ButtonColor
 		DescriptionHeader.TextColor3 = TextColor
 	end)
-	
+
 	table.insert(WindowConnections, EntryButtonClickConnection)
-	
+
 	EntryButton.Destroying:Once(function()
 		EntryButtonClickConnection:Disconnect()
 		table.remove(WindowConnections, table.find(WindowConnections, EntryButtonClickConnection))
@@ -586,11 +587,11 @@ PP.PostPacket = function(PacketType: string | "Signal" | "Physics", PacketData: 
 		ButtonColor = Color3.fromRGB(144,144,144)
 		TextColor = Color3.fromRGB(212,212,212)
 	end
-	
+
 	local Date = os.date("*t")
 	local RelevantTime = Date.hour..":"..Date.min..":"..Date.sec
 	local Length = string.len(PacketData or "")
-	
+
 	PacketType = PacketType or "n/a"
 	PacketData = PacketData or ""
 	HexID = HexID or "n/a"
@@ -598,7 +599,7 @@ PP.PostPacket = function(PacketType: string | "Signal" | "Physics", PacketData: 
 	Reliability = Reliability or "n/a"
 	--buttoncolor accounted
 	--textcolor accounted
-	
+
 	CreateEntry(PacketType, PacketData, HexID, Priority, Reliability, ButtonColor, TextColor, RelevantTime, Length)	
 end
 
